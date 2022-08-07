@@ -30,13 +30,18 @@ class Object:
 objects = []
 
 head = '''
-<head><style>
-table, th, td { border: 1px solid #c08080; }
-body {background-color: #202040; color: #ffe0e0}
-input {background-color: #202040; color: #ffe0e0;}
-textarea {background-color: #202040; color: #ffe0e0;}
-select {background-color: #202040; color: #ffe0e0;}
-</style></head>
+<head>
+	<style>
+		table, th, td { border: 1px solid #c08080; }
+		body {background-color: #202040; color: #ffe0e0}
+		input {background-color: #202040; color: #ffe0e0;}
+		textarea {background-color: #202040; color: #ffe0e0;}
+		select {background-color: #202040; color: #ffe0e0;}
+	</style>
+	<title>
+		SM64DS Custom Object Database
+	</title>
+</head>
 '''
 
 tableHeader = '''
