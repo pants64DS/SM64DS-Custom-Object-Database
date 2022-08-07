@@ -20,6 +20,7 @@ def integerOrNone(string, radix = 10):
 class Object:
 	def __init__(self, form):
 		self.name        = stringOrNone(form["name"])
+		self.creator     = stringOrNone(form["creator"])
 		self.romHack     = stringOrNone(form["romHack"])
 		self.category    = stringOrNone(form["category"])
 		self.objectID    = integerOrNone(form["objectID"])
@@ -40,6 +41,7 @@ select {background-color: #202040; color: #ffe0e0;}
 
 tableHeader = '''
 <th>Name</th>
+<th>Creator</th>
 <th>ROM Hack</th>
 <th>Category</th>
 <th>Object ID</th>
@@ -75,6 +77,7 @@ def index():
 	for i, obj in enumerate(objects):
 		res += "<tr>"
 		res += f"<td>{getDisplayString(obj.name)}</td>"
+		res += f"<td>{getDisplayString(obj.creator)}</td>"
 		res += f"<td>{getDisplayString(obj.romHack)}</td>"
 		res += f"<td>{getDisplayString(obj.category)}</td>"
 		res += f"<td>{getDisplayID(obj.objectID)}</td>"
@@ -101,6 +104,9 @@ newObjectForm = "<!DOCTYPE html>" + head + '''
 
 Name:
 <input type="text" name="name" required>
+<br><br>
+Creator:
+<input type="text" name="creator">
 <br><br>
 ROM Hack:
 <input type="text" name="romHack">
