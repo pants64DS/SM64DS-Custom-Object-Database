@@ -1,157 +1,55 @@
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, render_template
+from flask_sqlalchemy import SQLAlchemy
+from os import getenv
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+db = SQLAlchemy(app)
 
-def stringOrNone(string):
-	if string:
-		return string
-	else:
-		return None
-
-def integerOrNone(string, radix = 10):
-	if string:
-		try:
-			return int(string, radix)
-		except:
-			return -1
-	else:
-		return -1
-
-class Object:
-	def __init__(self, form):
-		self.name        = stringOrNone(form["name"])
-		self.creator     = stringOrNone(form["creator"])
-		self.romHack     = stringOrNone(form["romHack"])
-		self.category    = stringOrNone(form["category"])
-		self.objectID    = integerOrNone(form["objectID"])
-		self.actorID     = integerOrNone(form["actorID"])
-		self.description = stringOrNone(form["description"])
-
-objects = []
-
-head = '''
-<head>
-	<style>
-		table, th, td { border: 1px solid #c08080; }
-		body {background-color: #202040; color: #ffe0e0}
-		input {background-color: #202040; color: #ffe0e0;}
-		textarea {background-color: #202040; color: #ffe0e0;}
-		select {background-color: #202040; color: #ffe0e0;}
-	</style>
-	<title>
-		SM64DS Custom Object Database
-	</title>
-</head>
-'''
-
-tableHeader = '''
-<th>Name</th>
-<th>Creator</th>
-<th>ROM Hack</th>
-<th>Category</th>
-<th>Object ID</th>
-<th>Actor ID</th>
-<th>Description</th>'''
-
-newObjectButton = '''
-<form action="/add" method="GET">
-<input type="submit" value="Add new object">
-</form>
-'''
-
-def getDisplayID(x):
-	if x == -1:
+def getDisplayString(x):
+	if x is None or (type(x) is str and not x):
 		return '–'
 	else:
 		return x
 
-def getDisplayString(s):
-	if s:
-		return s
-	else:
-		return '–'
+columns = ["name", "creator", "rom_hack", "category", "object_id", "actor_id", "description"]
 
 @app.route("/")
 def index():
-	res = "<!DOCTYPE html><table><html>"
-	res += "<h1>SM64DS Custom Object Database</h1>"
-	res += head
-	res += "<body>"
-	res += tableHeader
+	objects = db.session.execute("SELECT * FROM objects").fetchall()
 
-	for i, obj in enumerate(objects):
-		res += "<tr>"
-		res += f"<td>{getDisplayString(obj.name)}</td>"
-		res += f"<td>{getDisplayString(obj.creator)}</td>"
-		res += f"<td>{getDisplayString(obj.romHack)}</td>"
-		res += f"<td>{getDisplayString(obj.category)}</td>"
-		res += f"<td>{getDisplayID(obj.objectID)}</td>"
-		res += f"<td>{getDisplayID(obj.actorID)}</td>"
-		res += f"<td>{getDisplayString(obj.description)}</td>"
-
-		res += f'''
-			<td>
-			<form action="/remove={i}" method="GET">
-			<input type=\"submit\" value=\"Remove\" onclick=\"return confirm('Are you sure you want to remove \\'{obj.name}\\'?')\">
-			</form>
-			</td></tr>
-		'''
-
-	res += "</table><br>"
-	res += newObjectButton
-	res += "</body></html>"
-
-	return res
-
-newObjectForm = "<!DOCTYPE html>" + head + '''
-<h3>New Object</h3>
-<form action="/send" method="POST">
-
-Name:
-<input type="text" name="name" required>
-<br><br>
-Creator:
-<input type="text" name="creator">
-<br><br>
-ROM Hack:
-<input type="text" name="romHack">
-<br><br>
-<label>Category:</label>
-<select name="category">
-	<option>Enemy</option>
-	<option>Platform</option>
-	<option>Item</option>
-	<option selected>Misc.</option>
-</select>
-<br><br>
-Object ID:
-<input type="number" name="objectID">
-<br><br>
-Actor ID:
-<input type="number" name="actorID">
-<br><br>
-Description:
-<br>
-<textarea rows = "5" cols = "60" name="description">
-</textarea>
-<br><br>
-<input type="submit" value="Add">
-</form>
-'''
+	return render_template("index.html", objects=objects, columns=columns, getDisplayString=getDisplayString)
 
 @app.route("/add")
 def addCommand():
-	return newObjectForm
+	return render_template("new_object.html")
+
+def getFormValue(key):
+	value = request.form[key]
+
+	if not key.endswith("_id"):
+		return value
+
+	if value:
+		try:
+			return int(value)
+		except:
+			pass
+	return None
 
 @app.route("/send", methods=["GET", "POST"])
 def send():
-	newObject = Object(request.form)
-	if newObject.name:
-		objects.append(newObject)
+	insert = f"INSERT INTO objects ({','.join(columns)}) VALUES ({','.join([':' + p for p in columns])})"
+	newObject = {key : getFormValue(key) for key in columns}
+
+	db.session.execute(insert, newObject)
+	db.session.commit()
 
 	return redirect("/")
 
-@app.route("/remove=<i>")
-def removeCommand(i):
-	if objects: objects.pop(int(i))
+@app.route("/remove=<id>")
+def removeCommand(id):
+	db.session.execute(f"DELETE FROM objects WHERE id={id}")
+	db.session.commit()
+
 	return redirect("/")

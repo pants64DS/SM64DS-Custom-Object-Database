@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="static/styles/main.css">
+<title>New Object – SM64DS Custom Object Database</title>
+<h3>New Object</h3>
+<form action="/send" method="POST">
+Name:
+<input type="text" name="name" required>
+<br><br>
+Creator:
+<input type="text" name="creator">
+<br><br>
+ROM Hack:
+<input type="text" name="rom_hack">
+<br><br>
+<label>Category:</label>
+<select name="category">
+	<option>Enemy</option>
+	<option>Platform</option>
+	<option>Item</option>
+	<option selected>Misc.</option>
+</select>
+<br><br>
+Object ID:
+<input type="number" name="object_id">
+<br><br>
+Actor ID:
+<input type="number" name="actor_id">
+<br><br>
+Description:
+<br>
+<textarea rows = "5" cols = "60" name="description">
+</textarea>
+<br><br>
+<input type="submit" value="Add">
+</form>

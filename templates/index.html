@@ -1,0 +1,29 @@
+<!DOCTYPE html><table><html>
+<h1>SM64DS Custom Object Database</h1>
+<link rel="stylesheet" href="static/styles/main.css">
+<title>SM64DS Custom Object Database</title>
+<body>
+<th>Name</th>
+<th>Creator</th>
+<th>ROM Hack</th>
+<th>Category</th>
+<th>Object ID</th>
+<th>Actor ID</th>
+<th>Description</th>
+{% for obj in objects %}
+<tr>
+	{% for column in columns %}
+	<td>{{ getDisplayString(obj[column]) }}</td>
+	{% endfor %}
+	<td>
+		<form action="/remove={{ obj.id }}" method="GET">
+			<input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove \'{{ obj.name }}?\')">
+		</form>
+	</td>
+</tr>
+{% endfor %}
+</table><br>
+<form action="/add" method="GET">
+<input type="submit" value="Add new object">
+</form>
+</body></html>
