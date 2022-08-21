@@ -13,7 +13,7 @@
 {% for obj in objects %}
 <tr>
 	{% for column in columns %}
-	<td>{{ getDisplayString(obj[column]) }}</td>
+	<td>{{ get_display_string(obj[column]) }}</td>
 	{% endfor %}
 	<td>
 		<form action="/remove={{ obj.id }}" method="GET">
