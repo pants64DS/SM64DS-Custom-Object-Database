@@ -4,6 +4,10 @@ from app import app
 import objects
 import users
 
+def __check_crsf_token(form):
+    if session["csrf_token"] != form["csrf_token"]:
+        abort(403)
+
 def __get_display_string(x):
     if x is None or (type(x) is str and not x):
         return '–'
@@ -26,11 +30,15 @@ def add_object():
     if request.method == "GET":
         return render_template("new_object.html")
 
+    __check_crsf_token(request.form)
+
     objects.add_object(request.form)
     return redirect("/")
 
 @app.route("/remove=<id>")
 def remove_object(id):
+    __check_crsf_token(request.form)
+
     if not session["is_admin"]:
         abort(403)
 

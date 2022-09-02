@@ -2,7 +2,7 @@ from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import exc
 from db import db
-import traceback
+import secrets
 
 def register(username, password):
     try:
@@ -15,6 +15,7 @@ def register(username, password):
 
     session["username"] = username
     session["is_admin"] = False
+    session["csrf_token"] = secrets.token_hex(16)
 
     return True
 
@@ -25,6 +26,7 @@ def login(username, password):
     if user and check_password_hash(user.password, password):
         session["username"] = username
         session["is_admin"] = user.is_admin
+        session["csrf_token"] = secrets.token_hex(16)
         return True
 
     return False
@@ -32,3 +34,4 @@ def login(username, password):
 def logout():
     del session["username"]
     del session["is_admin"]
+    del session["csrf_token"]
