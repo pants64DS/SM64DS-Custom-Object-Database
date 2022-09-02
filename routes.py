@@ -1,4 +1,5 @@
 from flask import request, redirect, render_template, flash
+from flask import session, abort
 from app import app
 import objects
 import users
@@ -19,6 +20,9 @@ def index():
 
 @app.route("/add", methods=["GET", "POST"])
 def add_object():
+    if "username" not in session:
+        abort(403)
+
     if request.method == "GET":
         return render_template("new_object.html")
 
@@ -27,8 +31,10 @@ def add_object():
 
 @app.route("/remove=<id>")
 def remove_object(id):
-    objects.remove_object(id)
+    if not session["is_admin"]:
+        abort(403)
 
+    objects.remove_object(id)
     return redirect("/")
 
 @app.route("/register", methods=["GET", "POST"])
