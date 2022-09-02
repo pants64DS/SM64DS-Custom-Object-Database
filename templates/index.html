@@ -3,6 +3,20 @@
 <link rel="stylesheet" href="static/styles/main.css">
 <title>SM64DS Custom Object Database</title>
 <body>
+{% if session.username %}
+Logged in as <span class="name">{{ session.username }}</span>
+<form action="/logout" method="GET">
+	<input type="submit" class="logout" value="Log out">
+</form>
+{% else %}
+<form action="/login" method="GET">
+	<input type="submit" value="Log in">
+</form>
+<form action="/register" method="GET">
+	<input type="submit" value="Create account">
+</form>
+{% endif %}
+<br><br>
 <th>Name</th>
 <th>Creator</th>
 <th>ROM Hack</th>
@@ -15,15 +29,17 @@
 	{% for column in columns %}
 	<td>{{ get_display_string(obj[column]) }}</td>
 	{% endfor %}
-	<td>
-		<form action="/remove={{ obj.id }}" method="GET">
-			<input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove \'{{ obj.name }}?\')">
-		</form>
-	</td>
+	{% if session.is_admin %}
+		<td>
+			<form action="/remove={{ obj.id }}" method="GET">
+				<input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove \'{{ obj.name }}?\')">
+			</form>
+		</td>
+	{% endif %}
 </tr>
 {% endfor %}
 </table><br>
 <form action="/add" method="GET">
-<input type="submit" value="Add new object">
+	<input type="submit" value="Add new object">
 </form>
 </body></html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="static/styles/main.css">
+<title>Log In – SM64DS Custom Object Database</title>
+<h3>Log In</h3>
+<p class="flashes">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</p>
+<body>
+<form action="/login" method="POST">
+Username:
+<input type="text" name="username" required>
+<br><br>
+Password:
+<input type="password" name="password" required>
+<br><br>
+<input type="submit" value="Log in">
+<input type="button" onclick="location.href='/'" value="Cancel">
+</form>
+</body>

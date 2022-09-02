@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="static/styles/main.css">
 <title>New Object – SM64DS Custom Object Database</title>
 <h3>New Object</h3>
-<form action="/send" method="POST">
+<form action="/add" method="POST">
 Name:
 <input type="text" name="name" required>
 <br><br>
@@ -14,10 +14,10 @@ ROM Hack:
 <br><br>
 <label>Category:</label>
 <select name="category">
-	<option>Enemy</option>
-	<option>Platform</option>
-	<option>Item</option>
-	<option selected>Misc.</option>
+    <option>Enemy</option>
+    <option>Platform</option>
+    <option>Item</option>
+    <option selected>Misc.</option>
 </select>
 <br><br>
 Object ID:
@@ -32,4 +32,5 @@ Description:
 </textarea>
 <br><br>
 <input type="submit" value="Add">
+<input type="button" onclick="location.href='/'" value="Cancel">
 </form>
