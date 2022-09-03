@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="static/styles/main.css">
+<title>{{ obj.name }} – SM64DS Custom Object Database</title>
+<body>
+    <header>
+        <h1>{{ obj.name }}</h1>
+        {% if obj.rom_hack %}
+            <span class="leftmargin">from</span> {{ obj.rom_hack }}
+        {% endif %}
+        {% if obj.creator %}
+            <span class="leftmargin">created by</span> {{ obj.creator }}
+        {% endif %}
+    </header>
+
+    <p>{{ obj.description }}</p>
+
+    <span>Category:</span>
+    {{ obj.category }}
+
+    {% if not is_null(obj.object_id) %}
+        <span class="leftmargin">Object ID:</span>
+        {{ obj.object_id }}
+    {% endif %}
+
+    {% if not is_null(obj.actor_id) %}
+        <span class="leftmargin">Actor ID:</span>
+        {{ obj.actor_id }}
+    {% endif %}
+
+    <p><input type="button" onclick="location.href='/'" value="Back"></p>
+</body>

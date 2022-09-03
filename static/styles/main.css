@@ -1,33 +1,72 @@
 
-table, th, td {
-	border: 1px solid #c08080;
+table, th, tr, td {
+    border: 1px solid #c08080;
+}
+
+td, th {
+    padding-top:    5px;
+    padding-bottom: 5px;
+    padding-left:   5px;
+    padding-right:  5px;
 }
 
 body {
-	background-color: #202040;
-	color: #ffe0e0;
+    background-color: #202040;
+    color: #ffe0e0;
 }
 
 input {
-	background-color: #202040;
-	color: #ffe0e0;
-	margin-right: 20px;
-}
-
-input.logout {
-	margin-left: 20px;
+    background-color: #202040;
+    color: #ffe0e0;
+    margin-right: 20px;
 }
 
 textarea {
-	background-color: #202040;
-	color: #ffe0e0;
+    background-color: #202040;
+    color: #ffe0e0;
 }
 
 select {
-	background-color: #202040;
-	color: #ffe0e0;
+    background-color: #202040;
+    color: #ffe0e0;
 }
 
-span.name, p.flashes {
-	color: #c08080;
+span,  p.flashes {
+    color: #c08080;
+}
+
+.topright {
+    margin-left: 20px;
+}
+
+.topright form, .topright div, .topright input {
+    float: right;
+    display: inline;
+}
+
+td.property, th {
+    color: #ffb0b0;
+    font-weight: bold;
+}
+
+span.na {
+    color: #a0a0a0;
+}
+
+a:link, a:visited {
+    color: #ffe0e0;
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    color: #ffb0b0;
+    text-decoration: none;
+}
+
+header > h1 {
+    display: inline-block;
+}
+
+span.leftmargin {
+    margin-left: 40px;
 }

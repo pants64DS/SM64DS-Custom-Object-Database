@@ -1,45 +1,62 @@
-<!DOCTYPE html><table><html>
-<h1>SM64DS Custom Object Database</h1>
+<!DOCTYPE html>
+<html>
 <link rel="stylesheet" href="static/styles/main.css">
 <title>SM64DS Custom Object Database</title>
+<head>
+    <div class="topright">
+        {% if session.username %}
+            <form action="/logout" method="GET">
+                <div class="topright"><input type="submit" class="logout" value="Log out"></div>
+                <div class="topright">Logged in as <span>{{ session.username }}</span></div>
+            </form>
+        {% else %}
+            <form action="/register" method="GET">
+                <input type="submit" value="Create account">
+            </form>
+            <form action="/login" method="GET">
+                <input type="submit" value="Log in">
+            </form>
+        {% endif %}
+    </div>
+</head>
+<h1>SM64DS Custom Object Database</h1>
 <body>
-{% if session.username %}
-Logged in as <span class="name">{{ session.username }}</span>
-<form action="/logout" method="GET">
-	<input type="submit" class="logout" value="Log out">
-</form>
-{% else %}
-<form action="/login" method="GET">
-	<input type="submit" value="Log in">
-</form>
-<form action="/register" method="GET">
-	<input type="submit" value="Create account">
-</form>
-{% endif %}
-<br><br>
-<th>Name</th>
-<th>Creator</th>
-<th>ROM Hack</th>
-<th>Category</th>
-<th>Object ID</th>
-<th>Actor ID</th>
-<th>Description</th>
-{% for obj in objects %}
-<tr>
-	{% for column in columns %}
-	<td>{{ get_display_string(obj[column]) }}</td>
-	{% endfor %}
-	{% if session.is_admin %}
-		<td>
-			<form action="/remove={{ obj.id }}" method="GET">
-				<input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove \'{{ obj.name }}?\')">
-			</form>
-		</td>
-	{% endif %}
-</tr>
-{% endfor %}
-</table><br>
-<form action="/add" method="GET">
-	<input type="submit" value="Add new object">
-</form>
-</body></html>
+    <table>
+    <th>Name</th>
+    <th>Creator</th>
+    <th>ROM Hack</th>
+    <th>Category</th>
+    <th>Object ID</th>
+    <th>Actor ID</th>
+    <th>Description</th>
+    {% for obj in objects %}
+    <tr>
+        {% for column in columns %}
+        <td>
+            {% if column == "name" %}
+                <a href="/view={{ obj.id }}">{{ obj[column] }}</a>
+            {% elif is_null(obj[column])  %}
+                <span class="na">N/A</span>
+            {% else %}
+                {{ obj[column] }}
+            {% endif %}
+        </td>
+        {% endfor %}
+        {% if session.is_admin %}
+            <td>
+                <form action="/remove={{ obj.id }}" method="POST">
+                    <input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove \'{{ obj.name }}\'?')">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                </form>
+            </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </table><br>
+    {% if session.username %}
+    <form action="/add" method="GET">
+        <input type="submit" value="Add new object">
+    </form>
+    {% endif %}
+</body>
+</html>

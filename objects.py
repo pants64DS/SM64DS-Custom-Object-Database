@@ -5,6 +5,11 @@ columns = ["name", "creator", "rom_hack", "category", "object_id", "actor_id", "
 def get_all():
     return db.session.execute("SELECT * FROM objects").fetchall()
 
+def get_by_id(id):
+    sql = "SELECT * FROM objects WHERE id=:id"
+
+    return db.session.execute(sql, {"id": id}).fetchone()
+
 def __get_form_value(form, key):
     value = form[key]
 

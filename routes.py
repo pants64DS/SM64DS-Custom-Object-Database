@@ -5,22 +5,27 @@ import objects
 import users
 
 def __check_crsf_token(form):
-    if session["csrf_token"] != form["csrf_token"]:
-        abort(403)
+    try:
+        if session["csrf_token"] == form["csrf_token"]:
+            return
+    except:
+        pass
 
-def __get_display_string(x):
-    if x is None or (type(x) is str and not x):
-        return '–'
-    return x
+    abort(403)
+
+def __is_null(x):
+    if type(x) is str:
+        return not x
+
+    return x is None
 
 @app.route("/")
 def index():
-    return render_template(
-        "index.html",
-        objects=objects.get_all(),
-        columns=objects.columns,
-        get_display_string=__get_display_string
-    )
+    return render_template("index.html", objects=objects.get_all(), columns=objects.columns, is_null=__is_null)
+
+@app.route("/view=<id>")
+def view_object(id):
+    return render_template("view_object.html", obj=objects.get_by_id(id), is_null=__is_null)
 
 @app.route("/add", methods=["GET", "POST"])
 def add_object():
@@ -35,7 +40,7 @@ def add_object():
     objects.add_object(request.form)
     return redirect("/")
 
-@app.route("/remove=<id>")
+@app.route("/remove=<id>", methods=["POST"])
 def remove_object(id):
     __check_crsf_token(request.form)
 
