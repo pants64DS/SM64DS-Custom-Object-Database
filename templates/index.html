@@ -33,10 +33,12 @@
     <tr>
         {% for column in columns %}
         <td>
-            {% if column == "name" %}
-                <a href="/view={{ obj.id }}">{{ obj[column] }}</a>
-            {% elif is_null(obj[column])  %}
+            {% if is_null(obj[column])  %}
                 <span class="na">N/A</span>
+            {% elif column == "name" %}
+                <a href="/view={{ obj.id }}">{{ obj[column] }}</a>
+            {% elif column == "description" %}
+                <div class="description">{{ obj[column] }}</div>
             {% else %}
                 {{ obj[column] }}
             {% endif %}

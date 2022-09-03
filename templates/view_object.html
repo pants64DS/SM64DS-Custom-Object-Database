@@ -12,7 +12,9 @@
         {% endif %}
     </header>
 
-    <p>{{ obj.description }}</p>
+    {% if obj.description %}
+        <p class="description">{{ obj.description }}</p>
+    {% endif %}
 
     <span>Category:</span>
     {{ obj.category }}

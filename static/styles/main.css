@@ -70,3 +70,14 @@ header > h1 {
 span.leftmargin {
     margin-left: 40px;
 }
+
+div.description {
+    max-width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+p.description {
+    white-space: pre-wrap;
+}
