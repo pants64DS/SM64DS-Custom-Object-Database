@@ -26,14 +26,25 @@ def index():
     else:
         sortby = "name"
 
+    if "search" in request.args:
+        search_term = request.args["search"]
+    else:
+        search_term = str()
+
+    regex_enabled  = "re" in request.args
+    case_sensitive = "cs" in request.args
+
     return render_template(
         "index.html",
-        objects=objects.get_all(sortby),
+        objects=objects.get_all(sortby, search_term, regex_enabled, case_sensitive),
         columns=objects.columns,
         sortable_columns=objects.sortable_columns,
         column_display_names=objects.column_display_names,
         is_null=__is_null,
-        sortby=sortby
+        sortby=sortby,
+        search_term=search_term,
+        regex_enabled=regex_enabled*"checked",
+        case_sensitive=case_sensitive*"checked"
     )
 
 @app.route("/view=<id>")

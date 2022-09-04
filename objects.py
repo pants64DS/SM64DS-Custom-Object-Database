@@ -14,19 +14,45 @@ column_display_names = {
     "description": "Description"
 }
 
-def get_all(sortby):
+def __make_comparison(column, regex_enabled, case_sensitive):
+    if regex_enabled:
+        if case_sensitive:
+            return f"{column} ~ :search_term"
+        else:
+            return f"LOWER({column}) ~ LOWER(:search_term)"
+
+    if case_sensitive:
+        return f"POSITION(:search_term in {column}) > 0"
+    else:
+        return f"POSITION(LOWER(:search_term) in LOWER({column})) > 0"
+
+def get_all(sortby, search_term, regex_enabled, case_sensitive):
     # Check if the column name is valid to prevent SQL injection
     if sortby not in sortable_columns:
         abort(403)
 
-    # Since there doesn't seem to be a way to pass a column name to
-    # ORDER BY using a dictionary, a format string is used instead
-    if sortby.endswith("_id"):
-        sql = f"SELECT * FROM objects ORDER BY {sortby}"
-    else:
-        sql = f"SELECT * FROM objects ORDER BY CASE WHEN {sortby}='' THEN 1 ELSE 0 END, {sortby}"
+    sql = "SELECT * FROM objects "
 
-    return db.session.execute(sql).fetchall()
+    if search_term:
+        sql += f"""
+            WHERE {__make_comparison("name", regex_enabled, case_sensitive)}
+            OR    {__make_comparison("creator", regex_enabled, case_sensitive)}
+            OR    {__make_comparison("rom_hack", regex_enabled, case_sensitive)}
+            OR CAST (object_id AS TEXT) {"~" if regex_enabled else "=" } :search_term
+            OR CAST (actor_id  AS TEXT) {"~" if regex_enabled else "=" } :search_term
+            OR    {__make_comparison("description", regex_enabled, case_sensitive)}
+        """
+
+    sql += "ORDER BY "
+    if sortby.endswith("_id"):
+        sql += sortby
+    else:
+        sql += f"CASE WHEN {sortby}='' THEN 1 ELSE 0 END, {sortby}"
+
+    try:
+        return db.session.execute(sql, {"search_term": search_term}).fetchall()
+    except:
+        return list()
 
 def get_by_id(id):
     sql = "SELECT * FROM objects WHERE id=:id"

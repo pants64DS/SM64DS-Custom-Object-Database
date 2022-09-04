@@ -2,7 +2,7 @@
 <html>
 <link rel="stylesheet" href="static/styles/main.css">
 <title>SM64DS Custom Object Database</title>
-<head>
+<body>
     <div class="topright">
         {% if session.username %}
             <form action="/logout" method="GET">
@@ -18,9 +18,7 @@
             </form>
         {% endif %}
     </div>
-</head>
-<h1>SM64DS Custom Object Database</h1>
-<body>
+    <h1>SM64DS Custom Object Database</h1>
     <p>
         <form action="/" method="GET">
             <label>Sort by</label>
@@ -33,6 +31,15 @@
                     {% endif %}
                 {% endfor %}
             </select>
+            <input type="text" name="search" id="search_bar" placeholder="Search term…" size="40" class="search" value="{{ search_term }}">
+            <input type="submit" class="nomargin" value="Search">
+            {% if search_term %}
+                <input type="submit" class="nomargin" value="Clear" onClick="document.getElementById('search_bar').value = ''">
+            {% endif %}
+            <input type="checkbox" name="re" {{ regex_enabled }}>
+            <label>Enable regex</label>
+            <input type="checkbox" name="cs" {{ case_sensitive }}>
+            <label>Case sensitive</label>
         </form>
     </p>
     <table>
