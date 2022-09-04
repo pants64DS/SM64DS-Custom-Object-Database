@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="static/styles/main.css">
+{% if obj %}
+    <title>Editing {{ obj.name }} – SM64DS Custom Object Database</title>
+    <h3>Editing <span>{{ obj.name }}</span></h3>
+    <form action="/edit={{ obj.id }}" method="POST" enctype="multipart/form-data">
+{% else %}
+    <title>New Object – SM64DS Custom Object Database</title>
+    <h3>New Object</h3>
+    <form action="/add" method="POST" enctype="multipart/form-data">
+{% endif %}
+Name:
+{% if obj %}
+    <input type="text" name="name" value="{{ obj.name }}" required>
+{% else %}
+    <input type="text" name="name" required>
+{% endif %}
+<br><br>
+Creator:
+{% if obj %}
+    <input type="text" name="creator" value="{{ obj.creator }}">
+{% else %}
+    <input type="text" name="creator">
+{% endif %}
+<br><br>
+ROM Hack:
+{% if obj %}
+    <input type="text" name="rom_hack" value="{{ obj.rom_hack }}">
+{% else %}
+    <input type="text" name="rom_hack">
+{% endif %}
+<br><br>
+<label>Category:</label>
+<select name="category">
+    {% if obj %}
+        {% if obj.category == "Enemy"    %} <option selected> {% else %} <option> {% endif %} Enemy</option>
+        {% if obj.category == "Platform" %} <option selected> {% else %} <option> {% endif %} Platform</option>
+        {% if obj.category == "Item"     %} <option selected> {% else %} <option> {% endif %} Item</option>
+        {% if obj.category == "Misc."    %} <option selected> {% else %} <option> {% endif %} Misc.</option>
+    {% else %}
+        <option>Enemy</option>
+        <option>Platform</option>
+        <option>Item</option>
+        <option selected>Misc.</option>
+    {% endif %}
+</select>
+<br><br>
+Object ID:
+{% if obj %}
+    <input type="number" min="0" max="65535" name="object_id" value="{{ obj.object_id }}">
+{% else %}
+    <input type="number" min="0" max="65535" name="object_id">
+{% endif %}
+<br><br>
+Actor ID:
+{% if obj %}
+    <input type="number" min="0" max="65535" name="actor_id" value="{{ obj.actor_id }}">
+{% else %}
+    <input type="number" min="0" max="65535" name="actor_id">
+{% endif %}
+<br><br>
+Description:
+<br>
+{% if obj %}
+    <textarea rows = "5" cols = "60" name="description">{{ obj.description }}</textarea>
+{% else %}
+    <textarea rows = "5" cols = "60" name="description"></textarea>
+{% endif %}
+</textarea>
+<br><br>
+Upload image:
+<input type="file" name="file" accept="image/*">
+<br><br>
+<input type="submit" value="Save">
+{% if obj %}
+    <input type="button" onclick="location.href='/view={{ obj.id }}'" value="Cancel">
+{% else %}
+    <input type="button" onclick="location.href='/'" value="Cancel">
+{% endif %}
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>

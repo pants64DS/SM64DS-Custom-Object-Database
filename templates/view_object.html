@@ -33,5 +33,8 @@
         {{ obj.actor_id }}
     {% endif %}
 
-    <p><input type="button" onclick="location.href='/'" value="Back"></p>
+    <p>
+        <input type="button" onclick="location.href='/edit={{ obj.id }}'" value="Edit">
+        <input type="button" onclick="location.href='/'" value="Back">
+    </p>
 </body>

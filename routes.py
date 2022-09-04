@@ -61,12 +61,25 @@ def add_object():
         abort(403)
 
     if request.method == "GET":
-        return render_template("new_object.html")
+        return render_template("edit_object.html", obj=None)
 
     __check_crsf_token(request.form)
 
     objects.add_object(request)
     return redirect("/")
+
+@app.route("/edit=<id>", methods=["GET", "POST"])
+def edit_object(id):
+    if "username" not in session:
+        abort(403)
+
+    if request.method == "GET":
+        return render_template("edit_object.html", obj=objects.get_by_id(id))
+
+    __check_crsf_token(request.form)
+
+    objects.update_object(request, id)
+    return redirect(f"/view={id}")
 
 @app.route("/remove=<id>", methods=["POST"])
 def remove_object(id):

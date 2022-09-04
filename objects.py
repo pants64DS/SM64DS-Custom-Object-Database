@@ -94,16 +94,25 @@ def __get_form_value(form, key):
             pass
     return None
 
-def add_object(request):
-    params = {key: __get_form_value(request.form, key) for key in columns}
-
+def add_image(request):
     if "file" in request.files:
         image_file = request.files["file"]
         image_name = image_file.filename
+    
+    if image_name:
         image_data = image_file.read()
 
         sql = "INSERT INTO images (name, data) VALUES (:name, :data) RETURNING id"
-        params["image"] = db.session.execute(sql, {"name":image_name, "data":image_data}).one()[0]
+        return db.session.execute(sql, {"name":image_name, "data":image_data}).one()[0]
+
+    return None
+
+def add_object(request):
+    params = {key: __get_form_value(request.form, key) for key in columns}
+    image = add_image(request)
+
+    if image:
+        params["image"] = image
         columns_to_set = columns + ["image"]
     else:
         columns_to_set = columns
@@ -113,6 +122,24 @@ def add_object(request):
         VALUES ({','.join([':' + p for p in columns_to_set])})
     """
 
+    db.session.execute(sql, params)
+    db.session.commit()
+
+def update_object(request, id):
+    params = {key: __get_form_value(request.form, key) for key in columns}
+    image = add_image(request)
+
+    if image:
+        params["image"] = image
+        columns_to_set = columns + ["image"]
+    else:
+        columns_to_set = columns
+
+    sql = f"""
+        UPDATE objects SET {','.join([f"{p}=:{p}" for p in columns_to_set])} WHERE id=:id
+    """
+
+    params["id"] = id
     db.session.execute(sql, params)
     db.session.commit()
 
