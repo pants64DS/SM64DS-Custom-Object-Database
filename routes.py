@@ -1,5 +1,5 @@
 from flask import request, redirect, render_template, flash
-from flask import session, abort
+from flask import session, abort, make_response
 from app import app
 import objects
 import users
@@ -65,7 +65,7 @@ def add_object():
 
     __check_crsf_token(request.form)
 
-    objects.add_object(request.form)
+    objects.add_object(request)
     return redirect("/")
 
 @app.route("/remove=<id>", methods=["POST"])
@@ -107,3 +107,10 @@ def logout():
     users.logout()
 
     return redirect("/")
+
+@app.route("/image=<int:id>", methods=["GET"])
+def show(id):
+    response = make_response(bytes(objects.get_image(id)))
+    response.headers.set("Content-Type", "image")
+
+    return response

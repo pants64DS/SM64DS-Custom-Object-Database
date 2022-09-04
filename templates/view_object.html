@@ -16,6 +16,10 @@
         <p class="description">{{ obj.description }}</p>
     {% endif %}
 
+    {% if obj.image %}
+        <p><img src="/image={{ obj.image }}"></p>
+    {% endif %}
+
     <span>Category:</span>
     {{ obj.category }}
 

@@ -94,17 +94,38 @@ def __get_form_value(form, key):
             pass
     return None
 
-def add_object(form):
+def add_object(request):
+    params = {key: __get_form_value(request.form, key) for key in columns}
+
+    if "file" in request.files:
+        image_file = request.files["file"]
+        image_name = image_file.filename
+        image_data = image_file.read()
+
+        sql = "INSERT INTO images (name, data) VALUES (:name, :data) RETURNING id"
+        params["image"] = db.session.execute(sql, {"name":image_name, "data":image_data}).one()[0]
+        columns_to_set = columns + ["image"]
+    else:
+        columns_to_set = columns
+
     sql = f"""
-        INSERT INTO objects ({','.join(columns)})
-        VALUES ({','.join([':' + p for p in columns])})
+        INSERT INTO objects ({','.join(columns_to_set)})
+        VALUES ({','.join([':' + p for p in columns_to_set])})
     """
 
-    newObject = {key : __get_form_value(form, key) for key in columns}
-
-    db.session.execute(sql, newObject)
+    db.session.execute(sql, params)
     db.session.commit()
 
 def remove_object(id):
+    image = db.session.execute("SELECT (image) FROM objects WHERE id=:id", {"id": id}).fetchone()[0]
     db.session.execute("DELETE FROM objects WHERE id=:id", {"id": id})
+
+    if image:
+        db.session.execute("DELETE FROM images WHERE id=:id", {"id": image})
+
     db.session.commit()
+
+def get_image(id):
+    sql = "SELECT data FROM images WHERE id=:id"
+
+    return db.session.execute(sql, {"id": id}).fetchone()[0]
