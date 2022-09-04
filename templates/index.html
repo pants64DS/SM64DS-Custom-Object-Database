@@ -21,14 +21,24 @@
 </head>
 <h1>SM64DS Custom Object Database</h1>
 <body>
+    <p>
+        <form action="/" method="GET">
+            <label>Sort by</label>
+            <select name="sortby" onChange = "this.form.submit()">
+                {% for p in sortable_columns %}
+                    {% if p == sortby %}
+                        <option value="{{ p }}" selected>{{ column_display_names[p] }}</option>
+                    {% else %}
+                        <option value="{{ p }}">{{ column_display_names[p] }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </form>
+    </p>
     <table>
-    <th>Name</th>
-    <th>Creator</th>
-    <th>ROM Hack</th>
-    <th>Category</th>
-    <th>Object ID</th>
-    <th>Actor ID</th>
-    <th>Description</th>
+    {% for column in columns %}
+    <th>{{ column_display_names[column] }}</th>
+    {% endfor %}
     {% for obj in objects %}
     <tr>
         {% for column in columns %}

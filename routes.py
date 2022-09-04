@@ -21,7 +21,20 @@ def __is_null(x):
 
 @app.route("/")
 def index():
-    return render_template("index.html", objects=objects.get_all(), columns=objects.columns, is_null=__is_null)
+    if "sortby" in request.args:
+        sortby = request.args["sortby"]
+    else:
+        sortby = "name"
+
+    return render_template(
+        "index.html",
+        objects=objects.get_all(sortby),
+        columns=objects.columns,
+        sortable_columns=objects.sortable_columns,
+        column_display_names=objects.column_display_names,
+        is_null=__is_null,
+        sortby=sortby
+    )
 
 @app.route("/view=<id>")
 def view_object(id):
