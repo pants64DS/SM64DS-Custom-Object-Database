@@ -34,7 +34,9 @@
     {% endif %}
 
     <p>
-        <input type="button" onclick="location.href='/edit={{ obj.id }}'" value="Edit">
+        {% if session.username %}
+            <input type="button" onclick="location.href='/edit={{ obj.id }}'" value="Edit">
+        {% endif %}
         <input type="button" onclick="location.href='/'" value="Back">
     </p>
 </body>

@@ -39,7 +39,7 @@
             <input type="checkbox" name="re" {{ regex_enabled }}>
             <label>Enable regex</label>
             <input type="checkbox" name="cs" {{ case_sensitive }}>
-            <label>Case sensitive</label>
+            <label>Case-sensitive</label>
         </form>
     </p>
     <table>
@@ -77,9 +77,9 @@
     {% endfor %}
     </table><br>
     {% if session.username %}
-    <form action="/add" method="GET">
-        <input type="submit" value="Add new object">
-    </form>
+        <form action="/add" method="GET">
+            <input type="submit" value="Add new object">
+        </form>
     {% endif %}
 </body>
 </html>
