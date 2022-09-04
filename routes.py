@@ -34,9 +34,12 @@ def index():
     regex_enabled  = "re" in request.args
     case_sensitive = "cs" in request.args
 
+    objs = objects.get_all(sortby, search_term, regex_enabled, case_sensitive)
+    matches = objects.get_matches(objs, search_term, regex_enabled, case_sensitive)
+
     return render_template(
         "index.html",
-        objects=objects.get_all(sortby, search_term, regex_enabled, case_sensitive),
+        objects=objs,
         columns=objects.columns,
         sortable_columns=objects.sortable_columns,
         column_display_names=objects.column_display_names,
@@ -44,7 +47,8 @@ def index():
         sortby=sortby,
         search_term=search_term,
         regex_enabled=regex_enabled*"checked",
-        case_sensitive=case_sensitive*"checked"
+        case_sensitive=case_sensitive*"checked",
+        matches=matches
     )
 
 @app.route("/view=<id>")

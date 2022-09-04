@@ -31,7 +31,7 @@
                     {% endif %}
                 {% endfor %}
             </select>
-            <input type="text" name="search" id="search_bar" placeholder="Search term…" size="40" class="search" value="{{ search_term }}">
+            <input type="text" name="search" id="search_bar" placeholder="Search object…" size="40" class="search" value="{{ search_term }}">
             <input type="submit" class="nomargin" value="Search">
             {% if search_term %}
                 <input type="submit" class="nomargin" value="Clear" onClick="document.getElementById('search_bar').value = ''">
@@ -49,22 +49,26 @@
     {% for obj in objects %}
     <tr>
         {% for column in columns %}
-        <td>
-            {% if is_null(obj[column])  %}
-                <span class="na">N/A</span>
-            {% elif column == "name" %}
-                <a href="/view={{ obj.id }}">{{ obj[column] }}</a>
-            {% elif column == "description" %}
-                <div class="description">{{ obj[column] }}</div>
+            {% if column in matches[obj.id] %}
+                <td class="matching">
             {% else %}
-                {{ obj[column] }}
+                <td>
             {% endif %}
-        </td>
+                {% if is_null(obj[column])  %}
+                    <span class="na">N/A</span>
+                {% elif column == "name" %}
+                    <a href="/view={{ obj.id }}">{{ obj[column] }}</a>
+                {% elif column == "description" %}
+                    <div class="description">{{ obj[column] }}</div>
+                {% else %}
+                    {{ obj[column] }}
+                {% endif %}
+            </td>
         {% endfor %}
         {% if session.is_admin %}
             <td>
                 <form action="/remove={{ obj.id }}" method="POST">
-                    <input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove \'{{ obj.name }}\'?')">
+                    <input type="submit" class="nomargin" value="Remove" onclick="return confirm('Are you sure you want to remove \'{{ obj.name }}\'?')">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 </form>
             </td>

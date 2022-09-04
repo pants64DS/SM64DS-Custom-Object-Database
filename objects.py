@@ -3,6 +3,7 @@ from flask import abort
 
 columns = ["name", "creator", "rom_hack", "category", "object_id", "actor_id", "description"]
 sortable_columns = ["name", "creator", "rom_hack", "object_id", "actor_id"]
+searchable_columns = sortable_columns + ["description"]
 
 column_display_names = {
     "name": "Name",
@@ -15,6 +16,12 @@ column_display_names = {
 }
 
 def __make_comparison(column, regex_enabled, case_sensitive):
+    if column.endswith("_id"):
+        if regex_enabled:
+            return f"CAST ({column} AS TEXT) ~ :search_term"
+        else:
+            return f"CAST ({column} AS TEXT) = :search_term"
+
     if regex_enabled:
         if case_sensitive:
             return f"{column} ~ :search_term"
@@ -34,16 +41,12 @@ def get_all(sortby, search_term, regex_enabled, case_sensitive):
     sql = "SELECT * FROM objects "
 
     if search_term:
-        sql += f"""
-            WHERE {__make_comparison("name", regex_enabled, case_sensitive)}
-            OR    {__make_comparison("creator", regex_enabled, case_sensitive)}
-            OR    {__make_comparison("rom_hack", regex_enabled, case_sensitive)}
-            OR CAST (object_id AS TEXT) {"~" if regex_enabled else "=" } :search_term
-            OR CAST (actor_id  AS TEXT) {"~" if regex_enabled else "=" } :search_term
-            OR    {__make_comparison("description", regex_enabled, case_sensitive)}
-        """
+        sql += f"WHERE FALSE"
+        for column in searchable_columns:
+            sql += " OR "
+            sql += __make_comparison(column, regex_enabled, case_sensitive)
 
-    sql += "ORDER BY "
+    sql += " ORDER BY "
     if sortby.endswith("_id"):
         sql += sortby
     else:
@@ -53,6 +56,25 @@ def get_all(sortby, search_term, regex_enabled, case_sensitive):
         return db.session.execute(sql, {"search_term": search_term}).fetchall()
     except:
         return list()
+
+def get_matches(rows, search_term, regex_enabled, case_sensitive):
+    matches = {}
+    if not search_term:
+        return matches
+
+    for row in rows:
+        for column in searchable_columns:
+            sql = "SELECT id FROM objects WHERE id=:id AND "
+            sql += __make_comparison(column, regex_enabled, case_sensitive)
+            res = db.session.execute(sql, {"search_term": search_term, "id": row[0]}).fetchall()
+
+            if res:
+                if row[0] not in matches:
+                    matches[row[0]] = set()
+
+                matches[row[0]].add(column)
+
+    return matches
 
 def get_by_id(id):
     sql = "SELECT * FROM objects WHERE id=:id"
